@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXA EDUCATION</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #3B82F6; --dark: #1E40AF; --bg: #EFF6FF; --white: #FFFFFF;
+            --red: #DC2626; --text: #1F2937; --gray: #6B7280; --border: #E5E7EB;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #DBEAFE, #EFF6FF); color: var(--text); }
+
+        /* LOGIN */
+        #loginPage { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: var(--white); padding: 3rem; border-radius: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; justify-content: center; }
+        .logo-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--dark)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; }
+        .logo-text { font-size: 28px; font-weight: 700; color: var(--dark); }
+        .tagline { color: var(--gray); text-align: center; margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-input { width: 100%; padding: 0.875rem; border: 2px solid var(--border); border-radius: 0.75rem; font-size: 15px; }
+        .form-input:focus { outline: none; border-color: var(--primary); }
+        .btn { padding: 0.875rem 1.5rem; border: none; border-radius: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; width: 100%; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .btn-secondary { background: var(--white); color: var(--dark); border: 2px solid var(--primary); width: 100%; margin-top: 0.5rem; }
+        .btn-secondary:hover { background: var(--bg); }
+        .login-options { display: flex; gap: 1rem; margin-top: 1rem; }
+        .login-options .btn { flex: 1; }
+
+        /* DASHBOARD */
+        #dashboard { display: none; min-height: 100vh; }
+        #dashboard.active { display: flex; }
+        .sidebar { width: 260px; background: var(--white); border-right: 1px solid var(--border); position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.75rem; }
+        .menu-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1.5rem; color: var(--text); cursor: pointer; border-left: 3px solid transparent; }
+        .menu-item:hover, .menu-item.active { background: var(--bg); border-left-color: var(--primary); }
+        .menu-item i { width: 20px; color: var(--primary); text-align: center; }
+        .main-content { flex: 1; margin-left: 260px; display: flex; flex-direction: column; }
+        .header { background: var(--white); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+        .header-left { display: flex; align-items: center; gap: 1rem; }
+        .global-search { flex: 1; max-width: 400px; margin: 0 2rem; position: relative; }
+        .global-search input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 2px solid var(--border); border-radius: 0.75rem; }
+        .global-search i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--gray); }
+        .header-right { display: flex; align-items: center; gap: 1rem; }
+        .notification-btn { position: relative; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text); }
+        .notification-badge { position: absolute; top: -5px; right: -5px; background: var(--red); color: white; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .profile-btn { display: flex; align-items: center; gap: 0.5rem; background: none; border: none; cursor: pointer; }
+        .profile-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), var(--dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+        .profile-info { text-align: left; }
+        .profile-name { font-weight: 600; font-size: 14px; }
+        .profile-role { font-size: 12px; color: var(--gray); }
+
+        .content { padding: 2rem; flex: 1; }
+        .welcome { margin-bottom: 2rem; }
+        .welcome h1 { font-size: 28px; font-weight: 700; margin-bottom: 0.5rem; }
+        .welcome p { color: var(--gray); }
+
+        /* ALERT */
+        .alert-card { background: #FEF2F2; border: 2px solid var(--red); border-radius: 1rem; padding: 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; }
+        .alert-icon { width: 48px; height: 48px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; }
+        .alert-title { font-weight: 700; color: var(--red); }
+
+        /* STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stats-card { background: var(--white); border-radius: 1rem; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .stats-icon { width: 56px; height: 56px; background: var(--bg); border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--dark); }
+        .stats-value { font-size: 28px; font-weight: 700; }
+        .stats-label { font-size: 13px; color: var(--gray); text-transform: uppercase; }
+
+        /* AI CARD */
+        .ai-card { background: linear-gradient(135deg, var(--dark), #1E3A8A); border-radius: 1.5rem; padding: 2.5rem; text-align: center; color: white; margin-bottom: 2rem; }
+        .ai-card h2 { font-size: 24px; margin-bottom: 0.5rem; }
+        .ai-card p { opacity: 0.9; margin-bottom: 2rem; }
+        .ai-btn { background: var(--white); color: var(--dark); padding: 1rem 2.5rem; border: none; border-radius: 1rem; font-weight: 600; cursor: pointer; font-size: 16px; }
+
+        /* INFO GRID */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .info-card { background: var(--white); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); cursor: pointer; }
+        .info-card:hover { transform: translateY(-4px); }
+        .info-card-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+        .info-card-icon { width: 48px; height: 48px; background: var(--bg); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--dark); }
+        .info-card-title { font-weight: 600; }
+        .info-card-content { color: var(--gray); font-size: 14px; line-height: 1.6; }
+        .info-card-footer { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 13px; }
+        .badge { padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 12px; font-weight: 600; }
+        .badge-new { background: #DCFCE7; color: #166534; }
+        .badge-urgent { background: #FEE2E2; color: #991B1B; }
+
+        /* PAGES */
+        .page { display: none; }
+        .page.active { display: block; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .page-title { font-size: 24px; font-weight: 700; }
+
+        /* TABLE */
+        .data-table { background: var(--white); border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th { background: var(--bg); padding: 1rem 1.5rem; text-align: left; font-weight: 600; font-size: 13px; color: var(--gray); text-transform: uppercase; }
+        .table td { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); }
+        .table tr:hover { background: #F9FAFB; }
+
+        /* CHATBOT */
+        #chatbot { position: fixed; bottom: 2rem; right: 2rem; width: 400px; max-height: 600px; background: var(--white); border-radius: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); display: none; flex-direction: column; z-index: 1000; border: 1px solid var(--border); }
+        #chatbot.active { display: flex; }
+        .chatbot-header { padding: 1.25rem 1.5rem; background: linear-gradient(135deg, var(--dark), #1E3A8A); color: white; border-radius: 1.5rem 1.5rem 0 0; display: flex; justify-content: space-between; align-items: center; }
+        .chatbot-title { font-weight: 600; }
+        .chatbot-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+        .chatbot-messages { flex: 1; padding: 1.5rem; overflow-y: auto; }
+        .chat-message { margin-bottom: 1rem; display: flex; gap: 0.75rem; }
+        .chat-message.user { flex-direction: row-reverse; }
+        .chat-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .chat-avatar.ai { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; }
+        .chat-avatar.user { background: var(--bg); color: var(--dark); }
+        .chat-bubble { max-width: 75%; padding: 0.875rem 1.125rem; border-radius: 1rem; font-size: 14px; }
+        .chat-message.ai .chat-bubble { background: var(--bg); }
+        .chat-message.user .chat-bubble { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; }
+        .chat-input-container { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 0.75rem; align-items: center; }
+        .chat-input { flex: 1; padding: 0.75rem 1rem; border: 2px solid var(--border); border-radius: 1rem; font-size: 14px; }
+        .chat-send-btn { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border: none; width: 44px; height: 44px; border-radius: 1rem; cursor: pointer; }
+        .chat-voice-btn { background: var(--bg); color: var(--dark); border: none; width: 44px; height: 44px; border-radius: 1rem; cursor: pointer; font-size: 18px; }
+        .chat-voice-btn.listening { background: var(--red); color: white; }
+
+        /* NOTIFICATION */
+        #notificationDrawer { position: fixed; top: 0; right: -400px; width: 400px; height: 100vh; background: var(--white); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); z-index: 1001; transition: right 0.3s; }
+        #notificationDrawer.active { right: 0; }
+        .notification-header { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .notification-list { padding: 1rem; }
+        .notification-item { padding: 1rem; border-radius: 0.75rem; margin-bottom: 0.75rem; background: var(--bg); cursor: pointer; }
+        .notification-item.unread { border-left: 3px solid var(--primary); }
+        .notification-item.urgent { background: #FEF2F2; border-left: 3px solid var(--red); }
+
+        /* TOAST */
+        #toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--text); color: white; padding: 1rem 2rem; border-radius: 0.75rem; z-index: 3000; transition: transform 0.3s; }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+        #toast.success { background: #16A34A; }
+
+        @media (max-width: 1024px) {
+            .main-content { margin-left: 0; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN -->
+    <div id="loginPage">
+        <div class="login-box">
+            <div class="logo">
+                <div class="logo-icon">N</div>
+                <div class="logo-text">NEXA EDUCATION</div>
+            </div>
+            <p class="tagline">Smart Information. Smarter Learning.</p>
+            <form onsubmit="event.preventDefault(); doLogin('student');">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="text" class="form-input" placeholder="student@nexa.edu">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
+            </form>
+            <div class="login-options">
+                <button class="btn btn-secondary" id="studentBtn"><i class="fas fa-user-graduate"></i> Student</button>
+                <button class="btn btn-secondary" id="staffBtn"><i class="fas fa-chalkboard-teacher"></i> Staff</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon" style="width: 40px; height: 40px; font-size: 20px;">N</div>
+                <span style="font-weight: 700; font-size: 18px; color: var(--dark);">NEXA</span>
+            </div>
+            <nav>
+                <a class="menu-item active" onclick="showPage('home')"><i class="fas fa-home"></i> Dashboard</a>
+                <a class="menu-item" onclick="showPage('notices')"><i class="fas fa-bullhorn"></i> Notices</a>
+                <a class="menu-item" onclick="showPage('events')"><i class="fas fa-calendar-check"></i> Events</a>
+                <a class="menu-item" onclick="showPage('assignments')"><i class="fas fa-book"></i> Assignments</a>
+                <a class="menu-item" onclick="showPage('assessments')"><i class="fas fa-clock"></i> Assessments</a>
+                <a class="menu-item" onclick="showPage('workshops')"><i class="fas fa-users-cog"></i> Workshops</a>
+                <a class="menu-item" onclick="showPage('hackathons')"><i class="fas fa-trophy"></i> Hackathons</a>
+                <a class="menu-item" onclick="showPage('holidays')"><i class="fas fa-calendar-alt"></i> Holidays</a>
+                <a class="menu-item" onclick="showPage('coins')"><i class="fas fa-coins"></i> Coins</a>
+                <a class="menu-item" onclick="showPage('admin')" id="adminMenu" style="display:none;"><i class="fas fa-tachometer-alt"></i> Admin</a>
+                <a class="menu-item" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="logo-icon" style="width: 36px; height: 36px; font-size: 18px;">N</div>
+                        <span style="font-weight: 700; font-size: 16px; color: var(--dark);">NEXA EDUCATION</span>
+                    </div>
+                </div>
+                <div class="global-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="header-right">
+                    <button class="notification-btn" onclick="toggleNotif()">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="profile-btn">
+                        <div class="profile-avatar" id="avatar">S</div>
+                        <div class="profile-info">
+                            <div class="profile-name" id="userName">Student</div>
+                            <div class="profile-role" id="userRole">Student</div>
+                        </div>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content">
+                <!-- HOME -->
+                <div id="home" class="page active">
+                    <div class="welcome">
+                        <h1>Welcome to Nexa Education</h1>
+                        <p>Your AI-powered college platform</p>
+                    </div>
+
+                    <div class="alert-card">
+                        <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div>
+                            <div class="alert-title">🔴 IMPORTANT UPDATE</div>
+                            <div style="font-size: 14px;">Internal Assessment timing updated!</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stats-card">
+                            <div class="stats-icon"><i class="fas fa-calendar-check"></i></div>
+                            <div><div class="stats-value">3</div><div class="stats-label">Events</div></div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-icon"><i class="fas fa-book"></i></div>
+                            <div><div class="stats-value">3</div><div class="stats-label">Assignments</div></div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-icon"><i class="fas fa-bullhorn"></i></div>
+                            <div><div class="stats-value">3</div><div class="stats-label">Notices</div></div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-icon"><i class="fas fa-coins"></i></div>
+                            <div><div class="stats-value">150</div><div class="stats-label">Coins</div></div>
+                        </div>
+                    </div>
+
+                    <div class="ai-card">
+                        <h2>Ask Nexa AI</h2>
+                        <p>Get instant answers about college info</p>
+                        <button class="ai-btn" onclick="toggleChat()"><i class="fas fa-robot"></i> ASK AI ASSISTANT</button>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="info-card" onclick="showPage('notices')">
+                            <div class="info-card-header">
+                                <div class="info-card-icon"><i class="fas fa-bullhorn"></i></div>
+                                <div class="info-card-title">Notices</div>
+                            </div>
+                            <div class="info-card-content">• Mid-Sem Exam Schedule<br>• Library Hours<br>• Maintenance Notice</div>
+                            <div class="info-card-footer"><span class="badge badge-new">NEW</span><span>View →</span></div>
+                        </div>
+                        <div class="info-card" onclick="showPage('events')">
+                            <div class="info-card-header">
+                                <div class="info-card-icon"><i class="fas fa-calendar-check"></i></div>
+                                <div class="info-card-title">Events</div>
+                            </div>
+                            <div class="info-card-content">• Tech Fest - Sept 15<br>• Career Seminar - Sept 12<br>• Alumni Meet - Sept 20</div>
+                            <div class="info-card-footer"><span>View →</span></div>
+                        </div>
+                        <div class="info-card" onclick="showPage('assignments')">
+                            <div class="info-card-header">
+                                <div class="info-card-icon"><i class="fas fa-book"></i></div>
+                                <div class="info-card-title">Assignments</div>
+                            </div>
+                            <div class="info-card-content">• Data Structures (Sept 10)<br>• DBMS (Sept 8)<br>• Software Eng (Sept 15)</div>
+                            <div class="info-card-footer"><span class="badge badge-urgent">URGENT</span><span>View →</span></div>
+                        </div>
+                        <div class="info-card" onclick="showPage('assessments')">
+                            <div class="info-card-header">
+                                <div class="info-card-icon"><i class="fas fa-clock"></i></div>
+                                <div class="info-card-title">Assessments</div>
+                            </div>
+                            <div class="info-card-content">• Data Structures - Sept 12<br>• DBMS - Sept 14</div>
+                            <div class="info-card-footer"><span>View →</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NOTICES -->
+                <div id="notices" class="page">
+                    <div class="page-header"><h2 class="page-title">📢 Notices</h2></div>
+                    <div class="data-table">
+                        <table class="table">
+                            <thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Priority</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Mid-Semester Exam Schedule</strong></td><td>Academic</td><td>Sep 1</td><td><span class="badge badge-urgent">Important</span></td></tr>
+                                <tr><td><strong>Library Extended Hours</strong></td><td>Facility</td><td>Sep 3</td><td><span class="badge badge-new">Normal</span></td></tr>
+                                <tr><td><strong>Campus Maintenance</strong></td><td>Admin</td><td>Sep 4</td><td><span class="badge badge-urgent">Important</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- EVENTS -->
+                <div id="events" class="page">
+                    <div class="page-header"><h2 class="page-title">🎉 Events</h2></div>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="info-card-header"><div class="info-card-icon"><i class="fas fa-calendar-check"></i></div><div class="info-card-title">Tech Fest 2026</div></div>
+                            <div class="info-card-content"><p><strong>Date:</strong> Sep 15</p><p><strong>Venue:</strong> Main Auditorium</p></div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-header"><div class="info-card-icon"><i class="fas fa-calendar-check"></i></div><div class="info-card-title">Career Seminar</div></div>
+                            <div class="info-card-content"><p><strong>Date:</strong> Sep 12</p><p><strong>Venue:</strong> Conference Hall</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ASSIGNMENTS -->
+                <div id="assignments" class="page">
+                    <div class="page-header"><h2 class="page-title">📝 Assignments</h2></div>
+                    <div class="data-table">
+                        <table class="table">
+                            <thead><tr><th>Subject</th><th>Title</th><th>Deadline</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Data Structures</strong></td><td>Binary Tree</td><td>Sep 10</td><td><span class="badge badge-urgent">Pending</span></td></tr>
+                                <tr><td><strong>DBMS</strong></td><td>SQL Optimization</td><td>Sep 8</td><td><span class="badge badge-urgent">Pending</span></td></tr>
+                                <tr><td><strong>Software Eng</strong></td><td>Case Study</td><td>Sep 15</td><td><span class="badge badge-new">Not Started</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ASSESSMENTS -->
+                <div id="assessments" class="page">
+                    <div class="page-header"><h2 class="page-title">⏰ Assessments</h2></div>
+                    <div class="data-table">
+                        <table class="table">
+                            <thead><tr><th>Subject</th><th>Date</th><th>Time</th><th>Venue</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Data Structures</strong></td><td>Sep 12</td><td>10:00 AM</td><td>Block A, Room 301</td></tr>
+                                <tr><td><strong>DBMS</strong></td><td>Sep 14</td><td>2:00 PM</td><td>Block B, Room 205</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- WORKSHOPS -->
+                <div id="workshops" class="page">
+                    <div class="page-header"><h2 class="page-title">🎓 Workshops</h2></div>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="info-card-header"><div class="info-card-icon"><i class="fas fa-users-cog"></i></div><div class="info-card-title">ML Fundamentals</div></div>
+                            <div class="info-card-content"><p><strong>Date:</strong> Sep 18</p><p><strong>Speaker:</strong> Dr. Rajesh Kumar</p></div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-header"><div class="info-card-icon"><i class="fas fa-users-cog"></i></div><div class="info-card-title">Web Dev Bootcamp</div></div>
+                            <div class="info-card-content"><p><strong>Date:</strong> Sep 22</p><p><strong>Venue:</strong> Innovation Hub</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HACKATHONS -->
+                <div id="hackathons" class="page">
+                    <div class="page-header"><h2 class="page-title">🏆 Hackathons</h2></div>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="info-card-header"><div class="info-card-icon"><i class="fas fa-trophy"></i></div><div class="info-card-title">CodeWarriors 2026</div></div>
+                            <div class="info-card-content"><p><strong>Registration:</strong> Sep 10</p><p><strong>Event:</strong> Sep 25-26</p></div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-header"><div class="info-card-icon"><i class="fas fa-trophy"></i></div><div class="info-card-title">Blockchain Challenge</div></div>
+                            <div class="info-card-content"><p><strong>Registration:</strong> Sep 15</p><p><strong>Event:</strong> Oct 5-6</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HOLIDAYS -->
+                <div id="holidays" class="page">
+                    <div class="page-header"><h2 class="page-title">📅 Holidays</h2></div>
+                    <div class="data-table">
+                        <table class="table">
+                            <thead><tr><th>Holiday</th><th>Date</th><th>Day</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Ganesh Chaturthi</strong></td><td>Sep 7</td><td>Monday</td></tr>
+                                <tr><td><strong>Teachers' Day</strong></td><td>Sep 5</td><td>Saturday</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- COINS -->
+                <div id="coins" class="page">
+                    <div class="page-header"><h2 class="page-title">🪙 My Coins</h2></div>
+                    <div style="background: linear-gradient(135deg, #FCD34D, #F59E0B); color: white; padding: 2rem; border-radius: 1rem; text-align: center; margin-bottom: 2rem;">
+                        <div style="font-size: 48px; font-weight: 700;">150</div>
+                        <div>Current Balance</div>
+                    </div>
+                </div>
+
+                <!-- ADMIN -->
+                <div id="admin" class="page">
+                    <div class="page-header"><h2 class="page-title">👨‍💼 Admin Dashboard</h2></div>
+                    <div class="stats-grid">
+                        <div class="stats-card"><div class="stats-icon"><i class="fas fa-bullhorn"></i></div><div><div class="stats-value">3</div><div class="stats-label">Notices</div></div></div>
+                        <div class="stats-card"><div class="stats-icon"><i class="fas fa-calendar-check"></i></div><div><div class="stats-value">3</div><div class="stats-label">Events</div></div></div>
+                        <div class="stats-card"><div class="stats-icon"><i class="fas fa-users"></i></div><div><div class="stats-value">250+</div><div class="stats-label">Students</div></div></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot">
+        <div class="chatbot-header">
+            <div>
+                <div class="chatbot-title">Nexa AI</div>
+                <div style="font-size: 12px; opacity: 0.9;">Ask anything</div>
+            </div>
+            <button class="chatbot-close" onclick="toggleChat()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chatbot-messages" id="chatMsgs">
+            <div class="chat-message ai">
+                <div class="chat-avatar ai"><i class="fas fa-robot"></i></div>
+                <div class="chat-bubble">Hi! Ask me about assessments, assignments, events, or any college info!</div>
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <button class="chat-voice-btn" id="voiceBtn" onclick="toggleVoice()"><i class="fas fa-microphone"></i></button>
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type..." onkeypress="if(event.key==='Enter')sendChat()">
+            <button class="chat-send-btn" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION -->
+    <div id="notificationDrawer">
+        <div class="notification-header">
+            <strong>Notifications</strong>
+            <button onclick="toggleNotif()" style="background:none; border:none; font-size:24px; cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="notification-list">
+            <div class="notification-item unread"><strong>New Notice</strong><br><small>Exam Schedule</small></div>
+            <div class="notification-item urgent unread"><strong>Assignment Due</strong><br><small>DBMS in 4 days</small></div>
+            <div class="notification-item unread"><strong>Event</strong><br><small>Tech Fest Open</small></div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast">Success!</div>
+
+    <script>
+        // LOGIN FUNCTIONS
+        function doLogin(role) {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            document.getElementById('userName').textContent = role === 'student' ? 'Student' : 'Admin';
+            document.getElementById('userRole').textContent = role === 'student' ? 'Student' : 'Staff';
+            document.getElementById('avatar').textContent = role === 'student' ? 'S' : 'A';
+            if(role === 'staff') document.getElementById('adminMenu').style.display = 'flex';
+            showToast('Welcome!');
+        }
+
+        function doLogout() {
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('adminMenu').style.display = 'none';
+        }
+
+        // BUTTON EVENT LISTENERS
+        document.getElementById('studentBtn').addEventListener('click', function() {
+            doLogin('student');
+        });
+
+        document.getElementById('staffBtn').addEventListener('click', function() {
+            doLogin('staff');
+        });
+
+        // NAVIGATION
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        // CHATBOT
+        function toggleChat() {
+            const chat = document.getElementById('chatbot');
+            chat.classList.toggle('active');
+        }
+
+        function sendChat() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            const msgs = document.getElementById('chatMsgs');
+            msgs.innerHTML += '<div class="chat-message user"><div class="chat-avatar user"><i class="fas fa-user"></i></div><div class="chat-bubble">' + msg + '</div></div>';
+            input.value = '';
+
+            setTimeout(() => {
+                const response = getAIResponse(msg);
+                msgs.innerHTML += '<div class="chat-message ai"><div class="chat-avatar ai"><i class="fas fa-robot"></i></div><div class="chat-bubble">' + response + '</div></div>';
+                msgs.scrollTop = msgs.scrollHeight;
+            }, 600);
+        }
+
+        function getAIResponse(q) {
+            const query = q.toLowerCase();
+            if(query.includes('assessment') || query.includes('exam')) return '📅 Data Structures: Sep 12, 10AM<br>📅 DBMS: Sep 14, 2PM';
+            if(query.includes('assignment')) return '📝 DBMS: Due Sep 8<br>📝 Data Structures: Due Sep 10<br>📝 Software Eng: Due Sep 15';
+            if(query.includes('event')) return '🎉 Tech Fest: Sep 15<br>🎉 Career Seminar: Sep 12';
+            if(query.includes('workshop')) return '🎓 ML: Sep 18<br>🎓 Web Dev: Sep 22';
+            if(query.includes('hackathon')) return '🏆 CodeWarriors: Reg Sep 10<br>🏆 Blockchain: Reg Sep 15';
+            if(query.includes('holiday')) return '📅 Ganesh Chaturthi: Sep 7 (Mon)<br>📅 Teachers Day: Sep 5 (Sat)';
+            return 'Check Notices, Events, or Assignments sections for more info!';
+        }
+
+        // VOICE
+        function toggleVoice() {
+            const btn = document.getElementById('voiceBtn');
+            if(!('webkitSpeechRecognition' in window)) {
+                showToast('Voice not supported');
+                return;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.onstart = () => btn.classList.add('listening');
+            recognition.onresult = (e) => {
+                document.getElementById('chatInput').value = e.results[0][0].transcript;
+                sendChat();
+            };
+            recognition.onend = () => btn.classList.remove('listening');
+            recognition.start();
+        }
+
+        // NOTIFICATIONS
+        function toggleNotif() {
+            document.getElementById('notificationDrawer').classList.toggle('active');
+        }
+
+        // TOAST
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = 'toast show success';
+            setTimeout(() => toast.className = 'toast', 3000);
+        }
+    </script>
+</body>
+</html>
